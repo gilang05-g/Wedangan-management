@@ -28,7 +28,7 @@ Wedangan Management System (WMS) adalah aplikasi web berbasis *Mobile First* dan
 | **Framework** | Next.js App Router (React 19, TypeScript) |
 | **Styling** | Tailwind CSS v4 (Custom brand palette: Orange `#FF9012`, Cyan `#3EB8EB`) |
 | **Backend & DB** | **Tanpa backend eksternal** (Tanpa Laravel, MySQL, Supabase, Firebase, atau REST API). Seluruh kalkulasi dan state berjalan di browser klien. |
-| **Penyimpanan Data** | LocalStorage dengan skema versi (`wms_v1_`) dan mekanisme reactive store (`useSyncExternalStore`) yang bebas dari *hydration mismatch*. |
+| **Penyimpanan Data** | LocalStorage dengan skema versi (`wms_v1_`) dan mekanisme reactive store (`useSyncExternalStore`) yang bebas dari *hydration mismatch*. Dilengkapi fitur **Auto-Purge Tengah Malam (00:00)** untuk menghapus data kunjungan & pengeluaran sementara setiap pergantian hari. |
 | **Penyebaran / Deployment**| PWA (Progressive Web App) dengan manifest.json, dapat diinstall langsung di Android/iOS (*Add to Home Screen*). |
 | **Integrasi Eksternal**| WhatsApp Click-to-Chat (`https://wa.me/?text=...`) & Clipboard API. |
 
@@ -147,7 +147,11 @@ TOTAL SETOR:
 - Tersedia tombol **Salin Laporan** dengan notifikasi toast.
 - Tersedia tombol **Lihat Format Pesan WhatsApp** untuk preview sebelum dikirim.
 
-### 4.7 Modul 7: Pengaturan, Backup & Reset
+### 4.7 Modul 7: Pengaturan, Backup, Reset & Auto-Purge Tengah Malam
+- **Auto-Purge Jam 12 Malam (00:00)**:
+  - Setiap pergantian hari (pukul 00:00 atau saat aplikasi dibuka di tanggal baru), data sementara berupa catatan kunjungan (`visits`) dan pengeluaran (`expenses`) otomatis dibersihkan agar aplikasi siap untuk rute shift berikutnya.
+  - Sebelum dibersihkan, stok akhir (`stockAkhir`) dari masing-masing wedangan otomatis diarsipkan ke cache riwayat (`PREVIOUS_STOCKS`), sehingga `Stock Awal` pada kunjungan hari berikutnya tetap dapat terisi otomatis.
+  - Pengaturan permanen (harga produk, nama rute, kustomisasi nama wedangan) tidak akan terhapus.
 - **Pengaturan Harga Unit**: Mengubah tarif dasar produk (disimpan di LocalStorage).
 - **Kustomisasi Nama Wedangan**: Mengubah nama wedangan per jadwal tanpa perlu mengubah kode sumber.
 - **Backup & Pemulihan (JSON)**:

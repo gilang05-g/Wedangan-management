@@ -17,15 +17,37 @@ import {
   exportAllDataAsJSON,
   importDataFromJSON,
   getPreviousVisitStock,
+  checkAndPurgeExpiredData,
 } from '@/lib/storage';
 
 const subscribe = (callback: () => void) => {
   if (typeof window === 'undefined') return () => {};
+
+  // Periksa dan bersihkan data sementara jika sudah lewat jam 12 malam
+  checkAndPurgeExpiredData();
+
+  const handleMidnightCheck = () => {
+    checkAndPurgeExpiredData();
+    callback();
+  };
+
   window.addEventListener('storage', callback);
   window.addEventListener('wms-data-changed', callback);
+  window.addEventListener('focus', handleMidnightCheck);
+  document.addEventListener('visibilitychange', handleMidnightCheck);
+
+  // Jadwalkan timer tepat saat jam 12 malam (00:00:01)
+  const now = new Date();
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+  const msUntilMidnight = Math.max(1000, midnight.getTime() - now.getTime());
+  const midnightTimer = setTimeout(handleMidnightCheck, msUntilMidnight);
+
   return () => {
     window.removeEventListener('storage', callback);
     window.removeEventListener('wms-data-changed', callback);
+    window.removeEventListener('focus', handleMidnightCheck);
+    document.removeEventListener('visibilitychange', handleMidnightCheck);
+    clearTimeout(midnightTimer);
   };
 };
 

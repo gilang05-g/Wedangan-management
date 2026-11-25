@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
   ROUTES: `${STORAGE_PREFIX}routes`,
   EXPENSES: `${STORAGE_PREFIX}expenses`,
   SUMMARIES: `${STORAGE_PREFIX}summaries`,
+  SESSION_DATE: `${STORAGE_PREFIX}session_date`,
+  PREVIOUS_STOCKS: `${STORAGE_PREFIX}previous_stocks`,
 } as const;
 
 export const DEFAULT_PRICE_PER_UNIT = 1500;
