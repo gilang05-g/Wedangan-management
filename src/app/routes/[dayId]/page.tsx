@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { DUMMY_ROUTES } from '@/data/dummy-routes';
 import RouteDetailClient from './RouteDetailClient';
 
@@ -11,7 +12,15 @@ interface RouteDetailPageProps {
   params: Promise<{ dayId: string }>;
 }
 
-export default async function RouteDetailPage({ params }: RouteDetailPageProps) {
+async function RouteDetailLoader({ params }: RouteDetailPageProps) {
   const resolvedParams = await params;
   return <RouteDetailClient dayId={resolvedParams.dayId} />;
+}
+
+export default function RouteDetailPage({ params }: RouteDetailPageProps) {
+  return (
+    <Suspense fallback={<div className="p-4 text-center text-xs text-slate-400">Memuat rute...</div>}>
+      <RouteDetailLoader params={params} />
+    </Suspense>
+  );
 }

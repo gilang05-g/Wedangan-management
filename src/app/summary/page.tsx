@@ -21,7 +21,7 @@ export default function SummaryPage() {
 
       <div className="p-4 space-y-4 flex-1">
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF9012]">
               <FileText className="w-5 h-5" />
             </div>
@@ -69,13 +69,21 @@ export default function SummaryPage() {
                   </div>
                 </div>
 
-                <Link
-                  href={`/routes/${route.id}`}
-                  className="w-full py-2 px-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-colors"
-                >
-                  <span>Buka Jadwal</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/routes/${route.id}`}
+                    className="flex-1 py-2 px-3 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-colors"
+                  >
+                    <span>Daftar Wedangan</span>
+                  </Link>
+                  <Link
+                    href={`/routes/${route.id}/rekap`}
+                    className="flex-1 py-2 px-3 rounded-xl bg-orange-50 border border-orange-200 text-[#FF9012] text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-orange-100 transition-colors"
+                  >
+                    <span>Rekap & Setor</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             );
           })}

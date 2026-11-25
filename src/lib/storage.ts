@@ -15,7 +15,7 @@ export const getStoredItem = <T>(key: string, defaultValue: T): T => {
   }
 };
 
-const notifySubscribers = () => {
+export const notifySubscribers = () => {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('wms-data-changed'));
   }
@@ -63,6 +63,54 @@ export const getStoredExpenses = (): Record<string, ExpenseItem[]> => {
 
 export const saveStoredExpenses = (expenses: Record<string, ExpenseItem[]>): boolean => {
   return setStoredItem(STORAGE_KEYS.EXPENSES, expenses);
+};
+
+// Retrieve previous visit stock for a stall if available
+export const getPreviousVisitStock = (stallId: string, currentDayId: string): number | null => {
+  const visits = getStoredVisits();
+  // Find any completed visit for this stall (not in currentDayId) sorted by updatedAt descending
+  const relevantVisits = Object.values(visits).filter(
+    (v) => v.stallId === stallId && v.dayId !== currentDayId && v.isCompleted
+  );
+
+  if (relevantVisits.length === 0) return null;
+
+  relevantVisits.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  return relevantVisits[0].stockAkhir;
+};
+
+// Export all data as JSON string for backup
+export const exportAllDataAsJSON = (): string => {
+  const data = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    settings: getAppSettings(),
+    routes: getStoredRoutes(),
+    visits: getStoredVisits(),
+    expenses: getStoredExpenses(),
+  };
+  return JSON.stringify(data, null, 2);
+};
+
+// Import backup JSON string with validation
+export const importDataFromJSON = (jsonString: string): { success: boolean; message: string } => {
+  if (typeof window === 'undefined') return { success: false, message: 'Window tidak tersedia' };
+  try {
+    const parsed = JSON.parse(jsonString);
+    if (!parsed || typeof parsed !== 'object') {
+      return { success: false, message: 'Format file JSON tidak valid.' };
+    }
+
+    if (parsed.settings) setStoredItem(STORAGE_KEYS.SETTINGS, parsed.settings);
+    if (parsed.routes && Array.isArray(parsed.routes)) setStoredItem(STORAGE_KEYS.ROUTES, parsed.routes);
+    if (parsed.visits && typeof parsed.visits === 'object') setStoredItem(STORAGE_KEYS.VISITS, parsed.visits);
+    if (parsed.expenses && typeof parsed.expenses === 'object') setStoredItem(STORAGE_KEYS.EXPENSES, parsed.expenses);
+
+    notifySubscribers();
+    return { success: true, message: 'Data backup berhasil dipulihkan.' };
+  } catch (error) {
+    return { success: false, message: `Gagal membaca file: ${(error as Error).message}` };
+  }
 };
 
 export const resetAllData = (): boolean => {

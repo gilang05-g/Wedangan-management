@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, ArrowRight, FileText } from 'lucide-react';
 import { TopHeader } from '@/components/layout/TopHeader';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { StallListItem } from '@/components/visits/StallListItem';
@@ -58,21 +58,47 @@ export default function RouteDetailClient({ dayId }: RouteDetailClientProps) {
 
           <ProgressBar current={completedStalls} total={totalStalls} />
 
-          {stats.isAllCompleted && (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 flex items-center justify-between text-xs text-emerald-800">
+          {/* Rekapitulasi Quick Link Banner */}
+          {stats.isAllCompleted ? (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between text-xs text-emerald-800">
               <div className="flex items-center gap-1.5 font-bold">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Semua wedangan selesai dicatat!</span>
               </div>
               <Link
-                href="/summary"
-                className="font-bold text-[#FF9012] underline hover:text-[#E67E08]"
+                href={`/routes/${dayId}/rekap`}
+                className="font-bold text-[#FF9012] hover:text-[#E67E08] flex items-center gap-1 shrink-0 ml-2"
               >
-                Lihat Rekap
+                <span>Lihat Rekap</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-[11px] text-slate-400">
+                {totalStalls - completedStalls} tempat belum dicatat
+              </span>
+              <Link
+                href={`/routes/${dayId}/rekap`}
+                className="text-[11px] font-bold text-slate-500 hover:text-orange-500 flex items-center gap-1"
+              >
+                <FileText className="w-3 h-3" />
+                <span>Ringkasan Sementara</span>
               </Link>
             </div>
           )}
         </div>
+
+        {/* CTA Selesaikan Rute when done */}
+        {stats.isAllCompleted && (
+          <Link
+            href={`/routes/${dayId}/rekap`}
+            className="w-full bg-[#FF9012] hover:bg-[#E67E08] text-white py-3.5 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm shadow-orange-200 active:scale-[0.99] transition-all"
+          >
+            <span>Selesaikan Rute & Kirim WhatsApp</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        )}
 
         {/* List of 25 Stalls */}
         <div className="space-y-2">
